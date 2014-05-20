@@ -1,0 +1,57 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage{amsmath, amssymb}
+\begin{document}
+$ \bold{Matrix \ Notes:}$ \\ \\
+Let $ A\ \mbox{and} \ B \in \mathbb{R}^{n \times n}, \ v_{0} \in \mathbb{R}^{n}, \ C \in \mathbb{R}^{m \times n},\ \mbox{and}  \ c_{*} \in \mathbb{R}^{m}$ \\ \\
+Where A and B are Genetic Regulatory Networks (GRN), $v_{0}$ is the initial protein concentrations,     $C$ maps the protein concentrations to a phenotype (which is a function of the protein concentrations), and $c_{*}$ is an environment-specific, optimal phenotype. \\ \\
+\begin{equation}
+v_{t} = A^{t}v_{0} \xrightarrow{t \rightarrow \infty} v_{\infty}
+\end{equation} \\ \\
+Equation (1)  outputs a vector of protein concentrations for a given GRN and initial concentrations.  GRNs that fail to converge are determined to be unfit (and are removed from the population). \\ \\
+$\bold{Section\ I: Determining \ GRN\ fitness}$\\ \\
+What is the euclidean distance between a GRN's phenotype and the optimal phenotype? The magnitude of this distance corresponds to fitness. If we take the square of the euclidean distance, distances farther from the optimal fitness are more strongly penalized. 
+\\ \\ 
+$ \mbox{Is } \lVert Cv_{t} - c_{*} \rVert
+\ \mbox{small?}$ \\ \\
+Note: $Cv_{t} = CA^{t}v_{0}$ \\ \\
+\begin{align} \begin{split}
+\lVert Cv_{t} - c_{*} \rVert^{2} &= (CA^{t}v_{0} - c_{*})^{T}(CA^{t}v_{0} - c_{*}) \\ \\
+\indent \indent \indent \ \ \ &= v_{0}^{T}(A^{T})^{t}C^{T}CA^{t}v_{0} - 2c_{*}^{T}CA^{t}v_{0} + c_{*}^{T}c_{*}
+\end{split} \end{align} \\
+We are primarily interested different GRNs that can both output fit phenotypes, given the same initial protein concentrations. Two GRNs, such as $A$ and $B$ will be considered to have identical fitness if we suppose: 
+\\ \\ \begin{equation} \begin{split}
+CA^{t}v_{0} = CB^{t}v_{0} \implies C(A^{t} - B^{t})v_{0} = 0 \\  \\
+\sum_{j}C_{ij}(A^{t}_{ji} - B^{t}_{ji}) = 0, \ \forall \ 1 \leq i \leq m
+\end{split} \end{equation}
+$ \\ \\
+\bold{Section\ II: Determining\ Fit\ GRNs }$
+If the GRN converges, $v_{\infty}$ will be an eigenvector of the GRN matrix, with eigenvalue = 1. 
+ \\ \\
+$
+v_{t} = A^{t}v_{0} \xrightarrow{t \rightarrow \infty} v_{\infty}
+\implies Av_{\infty} = v_{\infty}  \ (\mbox{with \ eigenvalue} \ 1) \\ \\
+$
+(and if $Aw = \lambda w$ with $| \lambda | > 1$, then $w^{T}v_{0} = 0
+) \\ \\ \indent \rightarrow$ actually, all eigenvalues $| \lambda | \leq 1$
+and
+$
+Cv_{\infty} = c_{*} \rightarrow v_{\infty} \in C^{-1}c_{*}\\ \\ \indent \rightarrow$ \\ \\
+If we assume that there is one optimal protein concentration vector, $v_{\infty}$ and that the norm of this vector is 1, then the set of all matrices that are fit ($\mathcal{A}$) is defined as follows:\\ \\
+$\mathcal{A} = \{ n \times n \ \mbox{matrices with eigenvalues} \ \leq 1 \ \mbox{and} \ Av=v \ \mbox{for some}\ v \ \mbox{such that} \ Cv= \indent \ \ \ c_{*} \}
+$
+\\  \\ if $
+\lVert v_{\infty} \rVert = 1, \\ $
+\begin{align} \begin{split}
+&A = v_{\infty}v_{\infty}^{T} + A' \\ \\ 
+&A - A' =  v_{\infty}v_{\infty}^{T} \\ \\
+&(\mbox{multiply by } v_{\infty}) \\ \\
+&A v_{\infty} - A' v_{\infty} = v_{\infty}v_{\infty}^{T} v_{\infty} \\ \\
+&A v_{\infty} = v_{\infty} \iff A' v_{\infty} = 0 \\ \\
+\end{split} \end{align} \\
+$\mbox{and } A' v_{\infty} = 0 \mbox{ if all rows in } A' \mbox{ are orthogonal to } v_{\infty}$ \\ \\
+
+$\mbox{with} \ A' v_{\infty} = 0,  \mbox{and} \ \frac{\lVert A'w \rVert}{\lVert w \rVert} \leq 1\ \forall \ w \ \mbox{and}\ \lVert A(v_{0} - v_{\infty}) \rVert < \lVert v_{0} - v_{\infty} \rVert \rightarrow \mbox{i.e.} \ (v_{0} - v_{\infty}) \ \mbox{in eingenspace with eigenvectors} << 1.
+$
+
+
+\end{document}
