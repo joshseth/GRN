@@ -1,0 +1,53 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage{amsmath, amssymb}
+\begin{document}
+
+\section{Introduction}
+
+The purpose of the following analysis is to establish a general framework to understand how genes interact to produce phenotypes, and to form predictions about how these interactions can evolve given specific conditions and constrains. 
+
+We study a population of varying organisms in a constant and shared environment.  
+
+\section{Definitions}
+
+All organisms are defined by their collection of $n$ genes and the $n^{2}$ possible interactions among these genes. This system, known as a Genetic Regulatory Network (GRN) is represented as a matrix of interaction coefficients:
+
+GRN $:= A \in \mathbb{R}^{n \times n}$ 
+
+An organism's phenotype is simply the vector of its gene products, and determined by an interaction of its GRN with its initial environmental conditions.
+
+Phenotype $:= v_{\infty}^{(A)}$ and initial environmental conditions $:= v_{0}$
+
+Formally, the phenotype is determined by the mapping (via a GRN): 
+
+$A^{\infty}: v_{0} \rightarrow v_{\infty}^{(A)}$ and is computed by iteratively multiplying the initial vector by the GRN until convergence, $A^{\infty}v_{0} = v_{\infty}^{(A)}$
+
+However, not all aspects of an organism's phenotype will increase or decrease its fitness in a given environment. Thus, we are interested in the aspects of an organism's phenotype that the environment will evaluate. 
+
+The phenotype exposed to natural selection is defined as the vector $c_{\infty}^{(A)} \in \mathbb{R}^{m}$.
+Note that this vector is in dimension $m$ and is not necessarily the same as the phenotype dimension, $n$. Natural selection can be evaluate any vector of $m$ functions of the phenotype. 
+
+The matrix $C \in \mathbb{R}^{m \times n}$ is a mapping which isolates only the aspects of a phenotype of interest given the environment. 
+
+$C: v_{\infty}^{(A)} \rightarrow c^{(A)}_{\infty}$
+
+The computation is as follows: $Cv_{\infty}^{(A)} = c_{\infty}^{(A)}$
+
+In this model, there exists one 'optimal' phenotype, $c_{*} \in \mathbb{R}^{m}$, which an organism's phenotype is compared to compute fitness. 
+
+Fitness is defined as: 
+
+$\lVert c_{\infty}^{(A)} - c_{*} \rVert^{2}$
+
+The 'optimal' GRN, or a GRN's highest-possible fitness is described by the measure $z \in \mathbb{R}$
+
+$ z := inf\{\lVert c_{\infty}^{(A)} - c_{*} \rVert^{2}: A \in \mathbb{R}^{n \times n}$
+
+\section{Ideas}
+
+Conjecture 1:
+
+ If $dim{[c_{\infty}^{(A)}]} \geq dim{[c_{*}]}$ then $z = 0\ \forall \ A$. If $dim{[c_{\infty}^{(A)}]} <  dim{[c_{*}]}$, then $z \geq 0$
+
+
+\end{document}
