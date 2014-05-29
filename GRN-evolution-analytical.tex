@@ -1,23 +1,28 @@
 \documentclass[a4paper,12pt]{article}
 \usepackage{amsmath, amssymb}
 \begin{document}
-$ \bold{Matrix \ Notes:}$ \\ \\
+
+\section{Matrix Notes}
+
 Let $ A\ \mbox{and} \ B \in \mathbb{R}^{n \times n}, \ v_{0} \in \mathbb{R}^{n}, \ C \in \mathbb{R}^{m \times n},\ \mbox{and}  \ c_{*} \in \mathbb{R}^{m}$ \\ \\
-Where A and B are Genetic Regulatory Networks (GRN), $v_{0}$ is the initial protein concentrations,     $C$ maps the protein concentrations to a phenotype (which is a function of the protein concentrations), and $c_{*}$ is an environment-specific, optimal phenotype. \\ \\
+Where A and B are Genetic Regulatory Networks (GRN), $v_{0}$ is the initial protein concentrations,     $C$ maps the protein concentrations to a phenotype (which is a function of the protein concentrations), and $c_{*}$ is an environment-specific, optimal phenotype.
+
 \begin{equation}
 v_{t} = A^{t}v_{0} \xrightarrow{t \rightarrow \infty} v_{\infty}
-\end{equation} \\ \\
-Equation (1)  outputs a vector of protein concentrations for a given GRN and initial concentrations.  GRNs that fail to converge are determined to be unfit (and are removed from the population). \\ \\
-$\bold{Section\ I: Determining \ GRN\ fitness}$\\ \\
+\end{equation}
+
+Equation (1)  outputs a vector of protein concentrations for a given GRN and initial concentrations.  GRNs that fail to converge are determined to be unfit (and are removed from the population). 
+
+\section{Determining GRN fitness}
+
 What is the euclidean distance between a GRN's phenotype and the optimal phenotype? The magnitude of this distance corresponds to fitness. If we take the square of the euclidean distance, distances farther from the optimal fitness are more strongly penalized. 
-\\ \\ 
-$ \mbox{Is } \lVert Cv_{t} - c_{*} \rVert
-\ \mbox{small?}$ \\ \\
-Note: $Cv_{t} = CA^{t}v_{0}$ \\ \\
-\begin{align} \begin{split}
-\lVert Cv_{t} - c_{*} \rVert^{2} &= (CA^{t}v_{0} - c_{*})^{T}(CA^{t}v_{0} - c_{*}) \\ \\
-\indent \indent \indent \ \ \ &= v_{0}^{T}(A^{T})^{t}C^{T}CA^{t}v_{0} - 2c_{*}^{T}CA^{t}v_{0} + c_{*}^{T}c_{*}
-\end{split} \end{align} \\
+
+Is $\lVert Cv_{t} - c_{*} \rVert$ small?
+Note: $Cv_{t} = CA^{t}v_{0}$
+\begin{align} 
+\lVert Cv_{t} - c_{*} \rVert^{2} &= (CA^{t}v_{0} - c_{*})^{T}(CA^{t}v_{0} - c_{*}) \\
+	&= v_{0}^{T}(A^{T})^{t}C^{T}CA^{t}v_{0} - 2c_{*}^{T}CA^{t}v_{0} + c_{*}^{T}c_{*}
+\end{align} 
 We are primarily interested different GRNs that can both output fit phenotypes, given the same initial protein concentrations. Two GRNs, such as $A$ and $B$ will be considered to have identical fitness if we suppose: 
 \\ \\ \begin{equation} \begin{split}
 CA^{t}v_{0} = CB^{t}v_{0} \implies C(A^{t} - B^{t})v_{0} = 0 \\  \\
