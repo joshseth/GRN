@@ -43,6 +43,12 @@ The 'optimal' GRN, or a GRN's highest-possible fitness is described by the measu
 
 $ z := inf\{\lVert c_{\infty}^{(A)} - c_{*} \rVert^{2}: A \in \mathbb{R}^{n \times n}\}$
 
+If a system is overdetermined it may be impossible for $z = 0$. Thus, to find the maximum fitness possible of a GRN $\in \mathbb{R}^{n \times n}$, we can use the linear-least squares method (LLS). 
+
+Set $\hat{c_{*}}$ to the vector that maximizes fitness and $\lVert r \rVert^{2}$ as a constant. The fitness is evaluated as follows: $\lVert c_{\infty}^{(A)} - \hat{c_{*}} \rVert^{2} + \lVert r \rVert^{2}$. As such, the 'optimal' GRN is one where $ \lVert c_{\infty}^{(A)} - \hat{c_{*}} \rVert^{2} = 0$, and if the system is not overdetermined then $ \lVert r \rVert^{2} = 0$. 
+
+Using LLS, $\hat{c_{*}} = (C^{T}C)^{-1}Cc_{*}$
+
 \section{Ideas}
 
 Conjecture 1:
