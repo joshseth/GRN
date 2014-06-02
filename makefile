@@ -5,7 +5,7 @@
 # git add (STUFF JUST ADDED)
 #
 
-.PHONY : clean publish pdfs setup xhtmls display
+.PHONY : clean publish pdfs setup htmls display skelml.index
 
 SHELL = /bin/bash
 LATEXML = $(shell which latexml)
@@ -21,22 +21,27 @@ include config.mk
 # stuff for compilers
 LATEXMLFLAGS = 
 LATEXMLPOSTFLAGS = --javascript=resources/LaTeXML-maybeMathjax.js --css=resources/plr-style.css --stylesheet=resources/xsl/LaTeXML-all-xhtml.xsl --javascript=resources/adjust-svg.js
+# uncomment this to split out chapters into separate documents
+# LATEXMLPOSTFLAGS += --split
 
-MD_HTML = $(patsubst %.md,%.html,$(MDFILES))
-TEX_HTML = $(patsubst %.tex,%.html,$(TEXFILES))
-TEX_XHTML = $(patsubst %.tex,%.xhtml,$(TEXFILES))
-WEBPAGES = $(MD_HTML) $(TEX_HTML) $(TEX_XHTML)
+MD_HTML = $(patsubst %.md,$(DISPLAYDIR)/%.html,$(MDFILES))
+TEX_HTML = $(patsubst %.tex,$(DISPLAYDIR)/%.html,$(TEXFILES))
+HTMLS = $(MD_HTML) $(TEX_HTML)
 
 PDFS = $(patsubst %.tex,$(DISPLAYDIR)/%.pdf,$(TEXFILES))
-XHTMLS = $(patsubst %.tex,$(DISPLAYDIR)/%.xhtml,$(TEXFILES))
 
 # hope their head isn't detached
 GITBRANCH := $(shell git symbolic-ref -q --short HEAD)
 
-display : xhtmls
+# this re-makes everything.  if this is too onerous, delete 'clean' here.
+# but beware, cruft will start to build up.
+display : clean
+	make $(HTMLS)
+	# don't want to overwrite index.html if it is already there
+	find display -maxdepth 1 -name "index.html" | grep -q . || make skelml.index
 
-xhtmls :
-	make $(XHTMLS)
+htmls :
+	make $(HTMLS)
 
 pdfs :
 	make $(PDFS)
@@ -44,16 +49,16 @@ pdfs :
 
 # update html in the gh-pages branch
 #   add e.g. 'pdfs' to the next line to also make pdfs available there
-publish : xhtmls
+publish : display
 	git checkout gh-pages
-	@echo "removing -- $$(grep -vxF -f <(echo .gitignore; find display/ -type f | sed -e 's_^display/*__') <(git ls-files) | tr '\n' ' ')"
+	@echo "removing -- $$(grep -vxF -f <(echo .gitignore; find display/ -type f | sed -e 's_^display/__') <(git ls-files) | tr '\n' ' ')"
 	# remove files no longer in display
-	OLDFILES=$$(grep -vxF -f  <(echo .gitignore; find display/ -type f | sed -e 's_^display/*__') <(git ls-files)); \
+	OLDFILES=$$(grep -vxF -f  <(echo .gitignore; find display/ -type f | sed -e 's_^display/__') <(git ls-files)); \
 			 if [ ! -z "$$OLDFILES" ]; then git rm $$OLDFILES; fi
 	# and add updated or new ones
-	@echo "adding -- $$(find display/ -type f | sed -e 's_^display/*__' | tr '\n' ' ')"
+	@echo "adding -- $$(find display/ -type f | sed -e 's_^display/__' | tr '\n' ' ')"
 	cp -r display/* .
-	UPFILES=$$(find display/ -type f | sed -e 's_^display/*__'); \
+	UPFILES=$$(find display/ -type f | sed -e 's_^display/__'); \
 		if [ ! -z "$$UPFILES" ]; then git add $$UPFILES; fi
 	git commit -a -m 'automatic update of html'
 	git checkout $(GITBRANCH)
@@ -61,6 +66,7 @@ publish : xhtmls
 # set up a clean gh-pages branch
 setup : 
 	@if ! git diff-index --quiet HEAD --; then echo "Commit changes first."; exit 1; fi
+	-mkdir display
 	git checkout --orphan gh-pages
 	-rm $(shell git ls-files -c)
 	git rm --cached $(shell git ls-files --cached)
@@ -76,16 +82,12 @@ clean :
 
 # make pdfs locally
 $(DISPLAYDIR)/%.pdf : %.tex %.bbl
-	while ( pdflatex $<;  grep -q "Rerun to get cross" $*.log ) do true ; done
+	while ( pdflatex -output-directory $(DISPLAYDIR) $<;  grep -q "Rerun to get cross" $*.log ) do true ; done
 
 %.bbl : %.tex
 	pdflatex $<
 	-bibtex $*.aux
 
-
-## TO-DO:
-# automatically figure out which things to tex up
-# remove intermediate .xml files
 
 ###
 # latexml stuff
@@ -102,8 +104,11 @@ $(DISPLAYDIR)/%.xml : %.bib
 $(DISPLAYDIR)/%.xml : %.tex
 	$(LATEXML) $(LATEXMLFLAGS) --destination=$@ $<
 
-$(DISPLAYDIR)/%.xhtml : $(DISPLAYDIR)/%.xml
-	$(eval BIBS = $(shell grep '\\bibliography' $*.tex | sed -e 's/.*\\bibliography[^{]*{\([^}]*\)\}.*/$(DISPLAYDIR)\/\1.xml/'))
+$(DISPLAYDIR)/%.html : $(DISPLAYDIR)/%.xml
+	$(eval BIBS = $(shell grep '\\bibliography{' $*.tex \
+		| sed -e 's/.*\\bibliography{\([^}]*\)\}.*/\1/' \
+		| tr ',' '\n' \
+		| sed -e 's/\(..*\)/$(DISPLAYDIR)\/\1.xml/'))
 	@if [ '$(BIBS)' ]; then \
 		echo 'making bibliography $(BIBS)'; \
 		make $(BIBS); \
@@ -113,7 +118,7 @@ $(DISPLAYDIR)/%.xhtml : $(DISPLAYDIR)/%.xml
 	# 	echo 'making $(FIGS)'; \
 	# 	make $(FIGS); \
 	# fi
-	$(LATEXMLPOST) --format=xhtml $(foreach bib,$(BIBS),--bibliography=$(bib)) $(LATEXMLPOSTFLAGS) --destination=$@ $<
+	$(LATEXMLPOST) --format=html5 $(foreach bib,$(BIBS),--bibliography=$(bib)) $(LATEXMLPOSTFLAGS) --destination=$@ $<
 
 
 ## 
@@ -131,3 +136,17 @@ $(DISPLAYDIR)/%.svg : %.pdf
 
 $(DISPLAYDIR)/%.png : %.pdf
 	convert -density 300 $< -flatten $@
+
+##
+# automatic index.html creation
+
+# this is not a rule for index.html since then if someone creates index.tex this will take precedence
+skelml.index ::
+	echo '<html xmlns="http://www.w3.org/1999/xhtml"> <head> <title></title> <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8"/> <link rel="stylesheet" href="pandoc.css" type="text/css" /></head> <body>' >display/index.html
+	echo '<h1>html files in this repository</h1><ul>' >> display/index.html
+	for x in $$(echo display/*html | sed -e 's_\<display/__g'); do echo "<li><a href=\"$${x}\">$${x}</a></li>" >> display/index.html; done
+	echo '</ul><p>Create your own <code>index.md</code> file to make this look nicer.</p>' >> display/index.html
+	echo '</body></html>' >> display/index.html
+
+
+
