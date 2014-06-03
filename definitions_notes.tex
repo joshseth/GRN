@@ -1,0 +1,71 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage{amsmath, amssymb}
+\begin{document}
+
+\section{Definitions}
+
+$A \in \mathbb{R}^{n \times n}$,
+$C \in \mathbb{R}^{m \times n}$
+$v_{0}, \ v_{\infty}^{(A)}, \ \hat{v_{\infty}} \in \mathbb{R}^{n}$
+$c_{*},\ \hat{c_{*}}, \ c_{\infty}^{(A)} \in \mathbb{R}^{m}$
+
+$A :=$ GRN (Genetic Regulatory Network)
+
+$v_{0} :=$ initial gene-product concentrations
+
+$v_{\infty}^{(A)} :=$ phenotype of A
+
+$\hat{v_{\infty}} :=$ phenotype with maximum possible fitness because it maps to $\hat{c_{\infty}}$. 
+
+$C \hat{v_{\infty}} = \hat{c_{\infty}}$ 
+
+$c_{\infty}^{(A)} :=$ phenotype of A evaluated by natural selection.
+
+$c_{*} :=$  phenotype under selection with fitness $= 1$
+
+$\hat{c_{*}} :=$ is the maximum fitness possible for a phenotype under selection.
+
+Compute $\hat{c_{*}}$ using Least Squares:
+
+$\hat{c_{*}} = (C^{T}C)^{-1}Cc_{*}$
+
+$A^{\infty} : v_{0} \mapsto v_{\infty}^{(A)}$
+
+Compute the phenotype, or $v_{\infty}^{(A)}$, of GRN A as follows:
+
+$\lim_{t \to \infty}A^{t}v_{0} = v_{\infty}^{(A)}$
+
+$C : v_{\infty}^{(A)} \mapsto c_{\infty}^{(A)}$
+
+Identify aspect of A's phenotype that is evaluated by natural selection:
+
+$Cv_{\infty}^{(A)} = c_{\infty}^{(A)}$ 
+
+$f : c_{\infty}^{(A)} \mapsto \mathbb{R}^{1} \in [0,1]$
+
+Compute fitness of A:
+
+$f(A) = e^{-\lVert c_{\infty}^{(A)} - c_{*} \rVert^{2}}$
+
+The GRN with the maximum possible fitness $A^{*}$, satisfies the condition,
+
+$\lVert c_{\infty}^{(A)} - \hat{c_{*}} \rVert^{2} = 0$
+
+and the fitness of $A^{*}$ is:
+
+$f(A^{*}) = e^{-(\lVert c_{\infty}^{(A)} - \hat{c_{*}} \rVert^{2} + \lVert r \rVert^{2})} = e^{- \lVert r \rVert^{2}} $, 
+
+where 
+
+$\lVert r \rVert^{2} \left\{\begin{array}{c} = 0, \text{if } dim{[c_{\infty}^{(A)}]} \geq dim{[c_{*}]} \\  \geq 0,  \text{if } dim{[c_{\infty}^{(A)}]} <  dim{[c_{*}]} \end{array} \right\}$
+
+Then the set $\mathcal{A}$ of GRNs that have optimal fitness can be described as the matrices that satisfy $A = \frac{\hat{v_{\infty}} \hat{v_{\infty}^{T}}}{\lVert \hat{v_{\infty}} \rVert^{2}} + A'$ where $A' \hat{v_{\infty}} = 0$
+
+Thus, $\mathcal{A} = \{A \in \mathbb{R}^{n \times n} : f(A) = e^{- \lVert r \rVert^{2}}, \ A' \hat{v_{\infty}} = 0 \}$
+
+
+
+
+
+
+\end{document}
